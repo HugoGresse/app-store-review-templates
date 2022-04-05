@@ -1,0 +1,28 @@
+{
+  "name": "app-store-review-templates",
+  "version": "1.0.0",
+  "author": "Hugo Gresse",
+  "description": "An browser web extension which add templating generic answer support to app store reviews website including Google Play Store. ",
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "dev": "vite",
+    "serve:firefox": "web-ext run --start-url \"about:debugging#/runtime/this-firefox\"  --source-dir ./dist/",
+    "serve:chrome": "MANIFEST_VERSION=3 web-ext run -t chromium --start-url \"https://google.com\" --source-dir ./dist/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@samrum/vite-plugin-web-extension": "^0.1.1",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@types/webextension-polyfill": "^0.8.2",
+    "svelte": "^3.44.0",
+    "svelte-preprocess": "^4.9.8",
+    "vite": "~2.8.0",
+    "web-ext": "^6.8.0"
+  },
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "webextension-polyfill": "^0.8.0"
+  },
+  "type": "module"
+}
