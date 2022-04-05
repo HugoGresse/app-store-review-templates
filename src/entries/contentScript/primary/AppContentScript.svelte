@@ -2,11 +2,7 @@
     import { onMount, tick } from 'svelte'
     import ModalDialog from '~/entries/utils/ModalDialog.svelte'
     import { listenClickOutsideDialog } from '~/entries/utils/listenClickOutsideDialog.js'
-
-    const KEY = 'astr-buttons'
-
-    const isBrowser = typeof browser != "undefined"
-    const storageRoot = chrome ? chrome : browser
+    import { getSavedButtons, savePluginButton } from '~/lib/extensionStorage.js'
 
     export let fill = () => {
     }
@@ -23,19 +19,6 @@
     let content = null
     let contentName = null
     let saveContentIndex = null
-
-    const getSavedButtons = async () => {
-        if (isBrowser) {
-            const { buttons } = await storageRoot.storage.sync.get(KEY) || { buttons: {} }
-            return buttons
-        }
-
-        return new Promise((resolve => {
-            storageRoot.storage.sync.get([KEY], (items) => {
-                resolve(Object.keys(items).length === 0 ? {} : items[KEY])
-            })
-        }))
-    }
 
     const editCategory = async (category) => {
         saveMode = true
@@ -96,28 +79,14 @@
                 const buttons = await getSavedButtons()
                 buttons[newCategoryName] = buttons[currentCategory]
                 delete buttons[currentCategory]
-                await savePluginData(buttons)
+                await savePluginButton(buttons)
+                await updateButtons()
                 currentCategory = null
                 content = null
                 saveMode = false
             } else {
                 onNewButtonPress(event, newCategoryName)
             }
-        }
-    }
-
-    const savePluginData = async (data) => {
-        if (isBrowser) {
-            storageRoot.storage.sync.set({
-                [KEY]: data
-            })
-            await updateButtons()
-        } else {
-            storageRoot.storage.sync.set({
-                [KEY]: data
-            }, async () => {
-                await updateButtons()
-            })
         }
     }
 
@@ -142,7 +111,8 @@
         }
         saveContentIndex = null
         saveMode= false
-        await savePluginData(dataToSave)
+        await savePluginButton(dataToSave)
+        await updateButtons()
     }
 
     const deleteButton = async (categoryName, contentName) => {
@@ -153,10 +123,11 @@
             ...buttons,
         }
         dataToSave[categoryName] = dataToSave[categoryName].filter(button => button.name !== contentName)
-        await savePluginData(dataToSave)
+        await savePluginButton(dataToSave)
+        await updateButtons()
     }
 
-    const updateButtons = async () => {
+    export const updateButtons = async () => {
         buttons = await getSavedButtons()
         buttonCategories = Object.keys(buttons)
     }
