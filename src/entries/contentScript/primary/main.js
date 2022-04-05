@@ -1,6 +1,6 @@
 import $ from "jquery"
 import { renderContent } from '~/entries/contentScript/renderContent.js'
-import App from './App.svelte'
+import AppContentScript from './AppContentScript.svelte'
 
 let isProcessing = false
 
@@ -27,7 +27,7 @@ const maybeAddButtons = async () => {
             const target = $(el).find('.aprt-container').first().get()[0]
             if (target) {
                 renderContent(import.meta.CURRENT_CONTENT_SCRIPT_CSS_URL, target, (appRoot) => {
-                    new App({
+                    new AppContentScript({
                         target: appRoot,
 
                         props: {

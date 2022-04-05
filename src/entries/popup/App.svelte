@@ -1,9 +1,13 @@
 <script>
-import PageContent from "~/lib/PageContent.svelte";
 </script>
 
 <main>
-  <PageContent> Popup </PageContent>
+    <a on:click={() => {
+    if(chrome) {
+        chrome.runtime.openOptionsPage()
+    }
+}}>Open Settings</a>
+
 </main>
 
 <style>
@@ -13,5 +17,9 @@ main {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+a {
+    cursor: pointer;
 }
 </style>

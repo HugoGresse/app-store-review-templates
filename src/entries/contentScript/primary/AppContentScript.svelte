@@ -8,8 +8,11 @@
     const isBrowser = typeof browser != "undefined"
     const storageRoot = chrome ? chrome : browser
 
-    export let fill = () => {}
+    export let fill = () => {
+    }
+    export let edit = true
 
+    let saveMode = false
     let buttonCategories = []
     let buttons = {}
     let categoryDialog = null
@@ -19,6 +22,7 @@
     let currentCategory = null
     let content = null
     let contentName = null
+    let saveContentIndex = null
 
     const getSavedButtons = async () => {
         if (isBrowser) {
@@ -33,6 +37,32 @@
         }))
     }
 
+    const editCategory = async (category) => {
+        saveMode = true
+        content = category
+        currentCategory = category
+        showCategoryDialog = true
+        await tick()
+        listenClickOutsideDialog(categoryDialog, () => {
+            saveMode = false
+        })
+        categoryDialog.showModal()
+    }
+
+    const editButton = async (category, name, cont) => {
+        saveMode = true
+        content = cont
+        contentName = name
+        currentCategory = category
+        showButtonDialog = true
+        saveContentIndex = buttons[currentCategory].findIndex(button => button.name === contentName)
+        await tick()
+        listenClickOutsideDialog(buttonDialog, () => {
+            saveMode = false
+        })
+        buttonDialog.showModal()
+    }
+
     const onNewButtonPress = async (event, category = null) => {
         event.preventDefault()
         if (category) {
@@ -42,19 +72,52 @@
             currentCategory = category
             await tick()
             buttonDialog.showModal()
-            listenClickOutsideDialog(buttonDialog)
+            listenClickOutsideDialog(buttonDialog, () => {
+                saveMode = false
+            })
         } else {
             showCategoryDialog = true
             await tick()
             categoryDialog.showModal()
-            listenClickOutsideDialog(categoryDialog)
+            listenClickOutsideDialog(categoryDialog, () => {
+                saveMode = false
+            })
         }
     }
 
     const onCategoryInputKeyPress = async (event) => {
+        const newCategoryName = event.target.value.trim()
+        if (newCategoryName.length === 0) {
+            return
+        }
         if (event.charCode === 13) {
             categoryDialog.close()
-            onNewButtonPress(event, event.target.value.trim())
+            if (saveMode) {
+                const buttons = await getSavedButtons()
+                buttons[newCategoryName] = buttons[currentCategory]
+                delete buttons[currentCategory]
+                await savePluginData(buttons)
+                currentCategory = null
+                content = null
+                saveMode = false
+            } else {
+                onNewButtonPress(event, newCategoryName)
+            }
+        }
+    }
+
+    const savePluginData = async (data) => {
+        if (isBrowser) {
+            storageRoot.storage.sync.set({
+                [KEY]: data
+            })
+            await updateButtons()
+        } else {
+            storageRoot.storage.sync.set({
+                [KEY]: data
+            }, async () => {
+                await updateButtons()
+            })
         }
     }
 
@@ -68,23 +131,29 @@
         if (!dataToSave[categoryName]) {
             dataToSave[categoryName] = []
         }
-        dataToSave[categoryName].push({
+        const item = {
             content,
             name: contentName,
-        })
-
-        if (isBrowser) {
-            storageRoot.storage.sync.set({
-                [KEY]: dataToSave
-            })
-            await updateButtons()
-        } else {
-            storageRoot.storage.sync.set({
-                [KEY]: dataToSave
-            }, async () => {
-                await updateButtons()
-            })
         }
+        if (saveContentIndex !== null) {
+            dataToSave[categoryName][saveContentIndex] = item
+        } else {
+            dataToSave[categoryName].push(item)
+        }
+        saveContentIndex = null
+        saveMode= false
+        await savePluginData(dataToSave)
+    }
+
+    const deleteButton = async (categoryName, contentName) => {
+        buttonDialog.close()
+        currentCategory = null
+        const buttons = await getSavedButtons()
+        const dataToSave = {
+            ...buttons,
+        }
+        dataToSave[categoryName] = dataToSave[categoryName].filter(button => button.name !== contentName)
+        await savePluginData(dataToSave)
     }
 
     const updateButtons = async () => {
@@ -99,9 +168,10 @@
 
 {#if showButtonDialog}
     <ModalDialog bind:dialog={buttonDialog} on:close={() => {
+        console.log("reset")
         showButtonDialog = false
-
-    }} title="Add a new button">
+        saveMode = false
+    }} title={saveMode ? "Edit button" : "Add a new button"}>
         <div>
             Category: {currentCategory} <br/>
         </div>
@@ -114,9 +184,18 @@
             <textarea bind:value={content} autofocus rows="10"/>
         </div>
         Length: {content ? content.length : 0}/350 <br/>
-        <button on:click={() => {addNewButton(currentCategory, content, contentName)}}>
-            Add
+        <button on:click={() => {
+            addNewButton(currentCategory, content, contentName)
+        }}>
+            {saveMode ? "Save" : "Add"}
         </button>
+        {#if saveMode}
+            <button on:click={() => {
+            deleteButton(currentCategory, contentName)
+        }}>
+                Delete
+            </button>
+        {/if}
         <br/>
         <br/>
     </ModalDialog>
@@ -125,8 +204,8 @@
 {#if showCategoryDialog}
     <ModalDialog bind:dialog={categoryDialog} on:close={() => {
         showCategoryDialog = false
-
-    }} title="Add a new category">
+        saveMode = false
+    }} title={saveMode ? "Edit category" : "Add a new category"}>
         <input type="text"
                placeholder="Category name"
                autofocus
@@ -147,15 +226,26 @@
                                 fill(content)
                             }}>
                             <a>{name}</a>
+
+                            {#if edit}
+                                <a on:click={() => {
+                                        editButton(category, name, content)
+                                    }}> [Edit]</a>
+                            {/if}
                         </li>
                     {/each}
-                    <li  on:click={(event) => {
+                    <li on:click={(event) => {
                             onNewButtonPress(event, category)
                         }}>
                         <a>
                             Add new
                         </a>
                     </li>
+                    {#if edit}
+                        <li on:click={() => {editCategory(category)}}>
+                            <a>Edit Category Name</a>
+                        </li>
+                    {/if}
                 </ul>
             </li>
         {/each}
@@ -177,14 +267,15 @@
         padding: 5px 10px;
     }
 
-    textarea {
+    textarea, input {
         width: 100%;
+        margin-bottom: 0.2rem;
         min-height: 50px;
         min-width: 600px;
         border: none;
         overflow: auto;
         outline: none;
-        background: #eef;
+        background: #f6f6ff;
         font-family: sans-serif;
         padding: 10px;
         box-sizing: border-box;
@@ -215,6 +306,11 @@
         transition-duration: 0.5s;
         border: none;
         cursor: pointer;
+        z-index: 100;
+    }
+
+    button {
+        margin-right: 0.2rem;
     }
 
     li a {
@@ -222,6 +318,7 @@
     }
 
     li:hover,
+    button:hover,
     li:focus-within {
         background: red;
         cursor: pointer;
@@ -235,7 +332,7 @@
         background: orange;
         visibility: hidden;
         opacity: 0;
-        min-width: 5rem;
+        min-width: 10rem;
         position: absolute;
         transition: all 0.5s ease;
         margin-top: 1rem;
@@ -250,6 +347,10 @@
         visibility: visible;
         opacity: 1;
         display: block
+    }
+
+    ul.dropdown li {
+        padding: 0.5rem 0.7rem;
     }
 
     ul li ul li {
