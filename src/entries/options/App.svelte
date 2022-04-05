@@ -1,5 +1,5 @@
 <script>
-    import AppContentScript from '~/entries/contentScript/primary/AppContentScript.svelte'
+    import TabBar from '~/lib/TabBar.svelte'
     import { getSavedButtons, savePluginButton } from '~/lib/extensionStorage.js'
 
     let lastValue = null
@@ -52,7 +52,8 @@
 
                 <button on:click={() => {
                 importData(importData)
-            }}>Import </button>
+            }}>Import
+                </button>
             {/if}
         </div>
     </div>
@@ -65,7 +66,7 @@
         </div>
     {/if}
 
-    <AppContentScript
+    <TabBar
             edit={true}
             fill={data => {
             lastValue = data
@@ -77,6 +78,7 @@
     :root {
         background: #EEE;
     }
+
     @media (prefers-color-scheme: dark) {
         :root, a {
             background: #333;

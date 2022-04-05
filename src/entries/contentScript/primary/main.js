@@ -1,12 +1,11 @@
 import $ from "jquery"
-import { renderContent } from '~/entries/contentScript/renderContent.js'
-import AppContentScript from './AppContentScript.svelte'
+import renderContent from '../renderContent.js'
+import App from './App.svelte'
 
 let isProcessing = false
 
 const maybeAddButtons = async () => {
-    if (isProcessing) {
-        console.log("cancel")
+    if (isProcessing || !window.location.href.startsWith('https://play.google.com/console/')) {
         return
     }
 
@@ -27,7 +26,7 @@ const maybeAddButtons = async () => {
             const target = $(el).find('.aprt-container').first().get()[0]
             if (target) {
                 renderContent(import.meta.CURRENT_CONTENT_SCRIPT_CSS_URL, target, (appRoot) => {
-                    new AppContentScript({
+                    new App({
                         target: appRoot,
 
                         props: {
@@ -42,12 +41,10 @@ const maybeAddButtons = async () => {
             }
         }
     })
-    console.log("Added buttons")
     isProcessing = false
 }
 
 if ($("review-reply").length !== 0) {
-    console.log("init first")
     setTimeout(() => {
         maybeAddButtons()
 
@@ -61,5 +58,4 @@ $(document).on('DOMNodeInserted', function (e) {
         }, 200)
     }
 })
-
 console.log("plugin init")

@@ -1,7 +1,7 @@
 <script>
     import { onMount, tick } from 'svelte'
-    import ModalDialog from '~/entries/utils/ModalDialog.svelte'
-    import { listenClickOutsideDialog } from '~/entries/utils/listenClickOutsideDialog.js'
+    import ModalDialog from '~/lib/ModalDialog.svelte'
+    import { listenClickOutsideDialog } from '~/lib/listenClickOutsideDialog.js'
     import { getSavedButtons, savePluginButton } from '~/lib/extensionStorage.js'
 
     export let fill = () => {

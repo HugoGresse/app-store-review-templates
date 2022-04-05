@@ -2,7 +2,7 @@ const sharedManifest = {
     content_scripts: [
         {
             js: ["src/entries/contentScript/primary/main.js"],
-            matches: ["https://play.google.com/console/*"],
+            matches: ["https://play.google.com/*"],
         },
     ],
     icons: {
@@ -21,7 +21,7 @@ const sharedManifest = {
         page: "src/entries/options/index.html",
         open_in_tab: true,
     },
-    permissions: ["storage"],
+    permissions: ["storage", "unlimitedStorage"],
 }
 
 const browserAction = {
