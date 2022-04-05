@@ -58,4 +58,4 @@ $(document).on('DOMNodeInserted', function (e) {
         }, 200)
     }
 })
-console.log("plugin init")
+// console.log("plugin init")

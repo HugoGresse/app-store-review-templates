@@ -1,5 +1,6 @@
 {
     "name": "app-store-review-templates",
+    "displayName": "App Store Review Templates",
     "version": "1.0.0",
     "author": "Hugo Gresse",
     "description": "An browser web extension which add templating generic answer support to app store reviews website including Google Play Store. ",

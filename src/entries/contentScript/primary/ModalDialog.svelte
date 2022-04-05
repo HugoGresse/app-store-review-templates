@@ -1,0 +1,86 @@
+<!-- See README.md for documentation on using this. -->
+<script>
+    import {createEventDispatcher} from 'svelte';
+    // Boolean that determines whether a close "X" should be displayed.
+    export let canClose = true;
+    // Optional CSS class name to be added to the dialog element.
+    export let className = '';
+    // Parent components can use bind:dialog to get a
+    // reference so they can call show(), showModal(), and close().
+    export let dialog;
+    // An optional icon to render in the header before the title.
+    export let icon = undefined;
+    // Title text to display in the dialog header.
+    export let title;
+    const dispatch = createEventDispatcher();
+    $: classNames = 'dialog' + (className ? ' ' + className : '');
+    function close() {
+        // Parent components can optionally listen for this event.
+        dispatch('close');
+        // This is not needed if the parent stops rendering this component.
+        dialog.close();
+    }
+
+</script>
+
+<dialog bind:this={dialog} class={classNames}>
+    <header>
+        {#if icon}{icon}{/if}
+        <div class="title">{title}</div>
+        {#if canClose}
+            <!-- Displays a unicode "heavy multiplication X". -->
+            <button class="close-btn" on:click={close}>x</button>
+        {/if}
+    </header>
+    <main>
+        <slot />
+    </main>
+</dialog>
+
+<style>
+    .close-btn {
+        border: none;
+        color: white;
+        font-size: 24px;
+        outline: none;
+        margin: 0;
+        cursor: pointer;
+        background: transparent;
+        padding: 10px;
+    }
+    .close-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+    dialog {
+        /* These properties center the dialog in the browser window. */
+        position: fixed;
+        border: none;
+        box-shadow: 0 0 10px darkgray;
+        padding: 0;
+    }
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: cornflowerblue;
+        box-sizing: border-box;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        width: 100%;
+    }
+    main {
+        padding: 1.5rem;
+    }
+    .title {
+        flex-grow: 1;
+        font-size: 18px;
+        margin-right: 10px;
+    }
+    dialog::backdrop,
+    :global(dialog + .backdrop) {
+        /* This is a transparent shade of gray. */
+        /* Why is this ignored in Safari? */
+        background: rgba(0, 0, 0, 0.4);
+    }
+</style>
