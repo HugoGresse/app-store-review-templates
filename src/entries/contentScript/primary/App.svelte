@@ -8,6 +8,8 @@
     const isBrowser = typeof browser != "undefined"
     const storageRoot = chrome ? chrome : browser
 
+    export let fill = () => {}
+
     let buttonCategories = []
     let buttons = {}
     let categoryDialog = null
@@ -26,7 +28,6 @@
 
         return new Promise((resolve => {
             storageRoot.storage.sync.get([KEY], (items) => {
-                console.log("ttitit", items)
                 resolve(Object.keys(items).length === 0 ? {} : items[KEY])
             })
         }))
@@ -35,8 +36,8 @@
     const onNewButtonPress = async (event, category = null) => {
         event.preventDefault()
         if (category) {
-            content=null
-            contentName=null
+            content = null
+            contentName = null
             showButtonDialog = true
             currentCategory = category
             await tick()
@@ -50,7 +51,7 @@
         }
     }
 
-    const onCategoryInputKeyPress= async (event) => {
+    const onCategoryInputKeyPress = async (event) => {
         if (event.charCode === 13) {
             categoryDialog.close()
             onNewButtonPress(event, event.target.value.trim())
@@ -59,10 +60,10 @@
 
     const addNewButton = async (categoryName, content, contentName) => {
         buttonDialog.close()
-        currentCategory= null
+        currentCategory = null
         const buttons = await getSavedButtons()
         const dataToSave = {
-                ...buttons,
+            ...buttons,
         }
         if (!dataToSave[categoryName]) {
             dataToSave[categoryName] = []
@@ -141,24 +142,26 @@
                 <a>{category}</a>
 
                 <ul class="dropdown">
-                    {#each innerButtons as { name, content}}
-                        <li>
+                    {#each innerButtons as { name, content }}
+                        <li on:click={() => {
+                                fill(content)
+                            }}>
                             <a>{name}</a>
                         </li>
                     {/each}
-                    <li>
-                        <a on:click={(event) => {
+                    <li  on:click={(event) => {
                             onNewButtonPress(event, category)
                         }}>
+                        <a>
                             Add new
                         </a>
                     </li>
                 </ul>
             </li>
         {/each}
-        <li><a on:click={(event) => {
+        <li on:click={(event) => {
             onNewButtonPress(event)
-        }}>
+        }}><a>
             Add new</a>
         </li>
     </ul>

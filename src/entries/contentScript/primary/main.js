@@ -29,6 +29,14 @@ const maybeAddButtons = async () => {
                 renderContent(import.meta.CURRENT_CONTENT_SCRIPT_CSS_URL, target, (appRoot) => {
                     new App({
                         target: appRoot,
+
+                        props: {
+                            fill: (data) => {
+                                $(el).find('textarea').first().val(data)
+                                const event = new Event("input", {"bubbles":true, "cancelable":true});
+                                $(el).find('textarea').first().get()[0].dispatchEvent(event);
+                            }
+                        }
                     })
                 })
             }
