@@ -58,11 +58,11 @@
     }
 
     const addNewButton = async (categoryName, content, contentName) => {
+        buttonDialog.close()
+        currentCategory= null
         const buttons = await getSavedButtons()
         const dataToSave = {
-            [KEY]: {
                 ...buttons,
-            }
         }
         if (!dataToSave[categoryName]) {
             dataToSave[categoryName] = []
@@ -73,10 +73,14 @@
         })
 
         if (isBrowser) {
-            storageRoot.storage.sync.set(dataToSave)
+            storageRoot.storage.sync.set({
+                [KEY]: dataToSave
+            })
             await updateButtons()
         } else {
-            storageRoot.storage.sync.set(dataToSave, async () => {
+            storageRoot.storage.sync.set({
+                [KEY]: dataToSave
+            }, async () => {
                 await updateButtons()
             })
         }
@@ -132,11 +136,23 @@
 
 <div class="aprt">
     <ul>
-        {#each buttonCategories as category}
+        {#each Object.entries(buttons) as [category, innerButtons]}
             <li>
                 <a>{category}</a>
 
                 <ul class="dropdown">
+                    {#each innerButtons as { name, content}}
+                        <li>
+                            <a>{name}</a>
+                        </li>
+                    {/each}
+                    <li>
+                        <a on:click={(event) => {
+                            onNewButtonPress(event, category)
+                        }}>
+                            Add new
+                        </a>
+                    </li>
                 </ul>
             </li>
         {/each}

@@ -16,7 +16,10 @@ const maybeAddButtons = async () => {
     }
 
     isProcessing = true
-    console.log("run")
+
+    document.querySelectorAll('.mdc-text-field__resizer').forEach(element => {
+        element.style.overflow = 'visible';
+    })
 
     $("review-reply").each(async function (i, el) {
         if ($(this).find(".aprt-container").length === 0) {
@@ -36,6 +39,7 @@ const maybeAddButtons = async () => {
 }
 
 $('reviews-list').on('DOMSubtreeModified', function () {
+    console.log("DOMSubtreeModified")
     setTimeout(() => {
         maybeAddButtons()
     }, 200)
