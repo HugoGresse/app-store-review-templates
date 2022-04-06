@@ -113,6 +113,7 @@
         saveMode= false
         await savePluginButton(dataToSave)
         await updateButtons()
+        content = null
     }
 
     const deleteButton = async (categoryName, contentName) => {

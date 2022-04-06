@@ -78,14 +78,6 @@
     :root {
         background: #EEE;
     }
-
-    @media (prefers-color-scheme: dark) {
-        :root, a {
-            background: #333;
-            color: #EEE;
-        }
-    }
-
     a {
         font-size: 1.4rem;
     }
@@ -110,7 +102,7 @@
         background: #FEFEFE;
         padding: 10px;
         text-align: left;
-        margin: 0 10px;
+        margin: 10px 0;
     }
 
     .exportImport {
@@ -134,4 +126,17 @@
     button:hover {
         filter: brightness(0.8);
     }
+
+    @media (prefers-color-scheme: dark) {
+        :root, a {
+            background: #333;
+            color: #EEE;
+        }
+        .example {
+            background: #222;
+            color: #EEE;
+            font-size: 1.2rem;
+        }
+    }
+
 </style>
