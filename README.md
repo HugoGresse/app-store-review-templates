@@ -3,6 +3,9 @@
 Extension for Chrome, Firefox, Edge, etc which enable templating on Google Play Store Reviews. 
 
 
+![use template & edit directly from Play Store](/marketing/play-store.png)
+
+![import & export](/marketing/settings.png)
 
 ## Project Setup
 
