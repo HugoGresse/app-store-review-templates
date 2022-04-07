@@ -47,6 +47,12 @@ export const ManifestV2 = {
         chrome_style: false,
     },
     permissions: [...sharedManifest.permissions, "*://*/*"],
+    browser_specific_settings: {
+        gecko: {
+            "id": "{fe7a09ca-686b-4128-aaa3-6bc4d3c79300}",
+            "strict_min_version": "42.0"
+        }
+    }
 }
 
 export const ManifestV3 = {
