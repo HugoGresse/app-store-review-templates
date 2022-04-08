@@ -2,6 +2,9 @@
 
 Extension for Chrome, Firefox, Edge, etc which enable templating on Google Play Store Reviews. 
 
+Available on:
+- [Chrome](https://chrome.google.com/webstore/detail/pganmakhjalohhdddmkhehgcoidfclja/)
+- [Firefox](https://addons.mozilla.org/fr/firefox/addon/app-store-review-templates/)
 
 ![use template & edit directly from Play Store](/marketing/play-store.png)
 
