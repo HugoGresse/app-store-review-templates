@@ -6,6 +6,11 @@ Available on:
 - [Chrome](https://chrome.google.com/webstore/detail/pganmakhjalohhdddmkhehgcoidfclja/)
 - [Firefox](https://addons.mozilla.org/fr/firefox/addon/app-store-review-templates/)
 
+Features:
+- 2 level templates, could be use to support many languages
+- limited sync on your browser account (Firefox limit is 102ko, Chrome is way larger)
+- import & export without limitation (you can also edit the data outside and re-mport them)
+
 ![use template & edit directly from Play Store](/marketing/play-store.png)
 
 ![import & export](/marketing/settings.png)
