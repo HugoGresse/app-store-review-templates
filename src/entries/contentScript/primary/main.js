@@ -25,7 +25,7 @@ const maybeAddButtons = async () => {
             $(el).find('textarea').first().after('<div class="aprt-container"></div>')
             const target = $(el).find('.aprt-container').first().get()[0]
             if (target) {
-                renderContent(import.meta.CURRENT_CONTENT_SCRIPT_CSS_URL, target, (appRoot) => {
+                renderContent(import.meta.PLUGIN_WEB_EXT_CHUNK_CSS_PATHS, target, (appRoot) => {
                     new App({
                         target: appRoot,
 
